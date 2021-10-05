@@ -1,27 +1,29 @@
 package paperkuts.io
 
+import paperkuts.io.DoWhenFileNotExists.CreateIfNotExists
+import paperkuts.io.DoWhenFileNotExists.FailEarly
 import paperkuts.utils.INDEX_NOT_FOUND
 import java.io.File
 import java.io.IOException
 import java.util.*
 
-enum class OnNeeding {
+enum class DoWhenFileNotExists {
     CreateIfNotExists,
     FailEarly
 }
 
-fun File.needsParent(needing: OnNeeding = OnNeeding.CreateIfNotExists): File {
+fun File.needsParent(doWhenFileNotExists: DoWhenFileNotExists = CreateIfNotExists): File {
     return apply {
 
         if (parentFile.exists()) {
             return@apply
         }
 
-        when (needing) {
-            OnNeeding.FailEarly -> {
+        when (doWhenFileNotExists) {
+            FailEarly -> {
                 throw IOException("parent directory required for $name: $parent")
             }
-            OnNeeding.CreateIfNotExists -> if (!mkdirs()) {
+            CreateIfNotExists -> if (!mkdirs()) {
                 throw IOException("unable to create parent for $name: $parent")
             }
         }
@@ -63,3 +65,4 @@ private class FileParts(private val file: File) : Parts<File> {
         }
     }
 }
+
