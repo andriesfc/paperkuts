@@ -15,3 +15,5 @@ fun Properties(source: InputStream, charset: Charset = Charsets.UTF_8): Properti
 fun Properties(file: File): Properties {
     return file.inputStream().use { Properties(it) }
 }
+
+const val INDEX_NOT_FOUND: Int = -1

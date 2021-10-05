@@ -1,30 +1,13 @@
+@file:Suppress("ReplacePutWithAssignment")
+
 package paperkuts.collections
 
-sealed class MapBuilder<K, V> : Builder<Map<K, V>>() {
-    abstract fun put(k: K, v: V)
+fun <M, K, V> M.of(vararg pairs: Pair<K, V>): M where M : MutableMap<K, V> {
+    return apply {
+        putAll(pairs)
+    }
 }
 
-private class MapBuilderImpl<K, V>(private val factory: () -> MutableMap<K, V>) :
-    MapBuilder<K, V>() {
+fun <K, V> MutableMap<K, V>.mapped(): Map<K, V> = toMap()
 
-    private lateinit var map: MutableMap<K, V>
-
-    init {
-        reset()
-    }
-
-    override fun emit(): Map<K, V> = map.toMap()
-
-    override fun reset() {
-        map = factory()
-    }
-
-    override fun discard() {
-        map.clear()
-    }
-
-    override fun put(k: K, v: V) {
-        map.put(k, v)
-    }
-
-}
+fun <K, V> Array<Pair<K, V>>.mapped() = HashMap<K, V>().of(*this).mapped()

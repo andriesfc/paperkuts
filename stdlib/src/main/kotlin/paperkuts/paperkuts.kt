@@ -25,3 +25,7 @@ fun String.prefixed(prefix: String): String = if (startsWith(prefix)) this else 
 
 inline fun <reified T> array(vararg items: T): Array<T> = arrayOf(*items)
 
+inline fun <A, B, A1> Pair<A, B>.map(a1: (A) -> A1): Pair<A1, B> = pair(a1(first), second)
+inline fun <A, B, B1> Pair<A, B>.mapSecond(b1: (B) -> B1): Pair<A, B1> = pair(first, b1(second))
+inline fun <A, B, A1, B1> Pair<A, B>.map(a1: (A) -> A1, b1: (B) -> B1): Pair<A1, B1> =
+    pair(a1(first), b1(second))
