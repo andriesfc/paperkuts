@@ -11,13 +11,11 @@ import java.io.File
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class FilePartsTest {
 
-
     @ParameterizedTest
     @MethodSource("pathExpectations")
     fun testParts(file: File, expectation: PartExpectation) {
         assertThat(file.parts()).isAsExpected(expectation)
     }
-
 
     private fun pathExpectations() = mapOf(
         File("") to PartExpectation(

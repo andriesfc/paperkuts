@@ -5,8 +5,8 @@ import assertk.assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import paperkuts.assertk.peek
-import paperkuts.io.DoWhenFileNotExists.CreateIfNotExists
-import paperkuts.io.DoWhenFileNotExists.FailEarly
+import paperkuts.io.DoWhenFileNotExists.MakeDirs
+import paperkuts.io.DoWhenFileNotExists.Fail
 import java.io.File
 import java.io.IOException
 
@@ -18,7 +18,7 @@ internal class FilesKtTest {
             File(
                 dir,
                 "/notes/note1.txt"
-            ).needsParent(CreateIfNotExists)
+            ).needsParent(MakeDirs)
         }.isSuccess().prop(File::getParentFile).exists()
     }
 
@@ -28,7 +28,7 @@ internal class FilesKtTest {
             File(
                 dir,
                 "/notes/note2.txt"
-            ).needsParent(FailEarly)
+            ).needsParent(Fail)
         }.isFailure().isInstanceOf(IOException::class).peek { println(it.message) }
     }
 
