@@ -12,12 +12,13 @@ import kotlin.io.path.name
 
 fun URI.path(): Path = Path.of(this)
 fun URL.path(): Path = Path.of(toURI())
+fun Path.file(): File = toFile()
 fun File.path(): Path = toPath()
 fun path(string: String): Path = Path.of(string)
 fun path(path: Path, vararg more: String): Path = Path.of(path.toString(), *more)
 fun path(first: String, vararg more: String): Path = Path.of(first, *more)
 fun Path.length(): Int = nameCount
-fun Path.realpath(vararg linkOptions: LinkOption): Path = toAbsolutePath().toRealPath(*linkOptions)
+fun Path.resolve(vararg linkOptions: LinkOption): Path = toAbsolutePath().toRealPath(*linkOptions)
 fun Path.isEmpty(): Boolean = nameCount == 0
 
 operator fun <T> Parts<T>.component1(): T? = parent
@@ -68,7 +69,7 @@ private class PathParts(private val path: Path) : Parts<Path> {
     override fun hashCode(): Int = Objects.hash(path)
 }
 
-fun Path.add(path: String, vararg more: String): Path {
+fun Path.join(path: String, vararg more: String): Path {
 
     val adding = when {
         more.isEmpty() -> path(path)
@@ -178,11 +179,7 @@ fun Path.slice(from: Int, howManyNames: Int = length()): Path {
 }
 
 
-fun Path.prefixed(prefix: Path): Path {
-
-    if (length() == 0) {
-        return prefix
-    }
+fun Path.withPrefix(prefix: Path): Path {
 
     if (startsWith(prefix)) {
         return this
@@ -191,11 +188,7 @@ fun Path.prefixed(prefix: Path): Path {
     return insert(0, prefix)
 }
 
-fun Path.suffixed(suffix: Path): Path {
-
-    if (length() == 0) {
-        return suffix
-    }
+fun Path.withSuffix(suffix: Path): Path {
 
     if (endsWith(suffix)) {
         return this

@@ -2,10 +2,7 @@ package paperkuts.nio.file
 
 import assertk.Assert
 import assertk.assertThat
-import assertk.assertions.isEqualTo
-import assertk.assertions.isFailure
-import assertk.assertions.isInstanceOf
-import assertk.assertions.isSuccess
+import assertk.assertions.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.intellij.lang.annotations.Language
@@ -13,6 +10,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.MethodSource
 import paperkuts.assertk.peek
 import paperkuts.io.PartExpectation
@@ -171,7 +169,7 @@ internal class PathKtTest {
     @Test
     fun testJoiningOfPaths() {
         val parent = path("~/.local")
-        val config = parent.add("data/d1.config").toString()
+        val config = parent.join("data/d1.config").toString()
         assertThat(config).isEqualTo("~/.local/data/d1.config")
     }
 
@@ -241,5 +239,23 @@ internal class PathKtTest {
         return transform("parts", Path::parts)
     }
 
+    @ParameterizedTest
+    @CsvSource(
+        "backups/urgent,    backups,    backups/urgent",
+        "urgent,            backups,    backups/urgent"
+    )
+    fun pathWithPrefix(path: String, prefix: String, expectedPrefixPath: String) {
+        assertThat(path(path).withPrefix(path(prefix))).isEqualTo(path(expectedPrefixPath))
+    }
+
+
+    @Nested
+    inner class TestPathWithSuffix {
+
+
+
+
+    }
 
 }
+

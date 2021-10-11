@@ -10,5 +10,6 @@ pluginManagement {
 rootProject.name = "paperkuts"
 
 include(
-    "stdlib"
+    "stdlib",
+    "junit-jupiter"
 )

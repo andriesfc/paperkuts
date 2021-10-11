@@ -5,4 +5,5 @@ plugins {
 
 dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
+    testImplementation(project(":junit-jupiter"))
 }

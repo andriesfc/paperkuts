@@ -26,6 +26,7 @@ dependencies {
         testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
         implementation("org.junit.jupiter:junit-jupiter:$junitVersion")
         implementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
+        implementation("com.willowtreeapps.assertk:assertk-jvm:$assertkVersion")
         testImplementation("io.mockk:mockk:$mockkVersion")
     }
 

@@ -1,32 +1,31 @@
+@file:Suppress("ClassName")
+
 package paperkuts.io
 
-import paperkuts.io.DoWhenFileNotExists.Fail
-import paperkuts.io.DoWhenFileNotExists.MakeDirs
-import paperkuts.nio.file.path
 import paperkuts.utils.INDEX_NOT_FOUND
 import java.io.File
 import java.io.IOException
-import java.nio.file.attribute.FileTime
-import java.time.LocalDateTime
-import java.time.ZoneOffset
 import java.util.*
 
-enum class DoWhenFileNotExists {
-    MakeDirs,
-    Fail
+enum class ParentMissingAction {
+    CREATE_PARENTS, IS_A_FAILURE
 }
 
-fun File.needsParent(fileNotExists: DoWhenFileNotExists = MakeDirs): File {
-    if (!parentFile.exists()) {
-        when (fileNotExists) {
-            Fail -> {
-                throw IOException("parent directory required for $name: $parent")
-            }
-            MakeDirs -> if (!mkdirs()) {
-                throw IOException("unable to create parent for $name: $parent")
-            }
+fun File.withParentPath(fileNotExists: ParentMissingAction): File {
+
+    if (parentFile.exists()) {
+        return this
+    }
+
+    when (fileNotExists) {
+        ParentMissingAction.IS_A_FAILURE -> {
+            throw IOException("parent directory required for $name: $parent")
+        }
+        ParentMissingAction.CREATE_PARENTS -> if (!mkdirs()) {
+            throw IOException("unable to create parent for $name: $parent")
         }
     }
+
     return this
 }
 
@@ -58,25 +57,20 @@ private class FileParts(private val file: File) : Parts<File> {
     }
 }
 
-fun File.modifiedAt(time: LocalDateTime, zoneOffset: ZoneOffset) {
+fun File.touch(parentMissingAction: ParentMissingAction = ParentMissingAction.CREATE_PARENTS): File {
 
-}
+    withParentPath(parentMissingAction)
 
-fun File.touch(): File {
-
-    if (!exists()) {
-        needsParent()
-        if (!createNewFile()) {
-            throw IOException(
-                "Unable to create new file [%s] here: %s".format(
-                    name,
-                    parent
-                )
+    if (!exists() && !createNewFile()) {
+        throw IOException(
+            "unable to create file \"%s\" here: \"%s\"".format(
+                name,
+                parent
             )
-        }
-    } else {
-
+        )
     }
+
+    setLastModified(System.currentTimeMillis())
 
     return this
 }

@@ -5,10 +5,11 @@ import assertk.assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import paperkuts.assertk.peek
-import paperkuts.io.DoWhenFileNotExists.MakeDirs
-import paperkuts.io.DoWhenFileNotExists.Fail
+import paperkuts.nio.file.file
+import paperkuts.nio.file.path
 import java.io.File
 import java.io.IOException
+import java.nio.file.Path
 
 internal class FilesKtTest {
 
@@ -18,7 +19,7 @@ internal class FilesKtTest {
             File(
                 dir,
                 "/notes/note1.txt"
-            ).needsParent(MakeDirs)
+            ).withParentPath(ParentMissingAction.CREATE_PARENTS)
         }.isSuccess().prop(File::getParentFile).exists()
     }
 
@@ -28,8 +29,17 @@ internal class FilesKtTest {
             File(
                 dir,
                 "/notes/note2.txt"
-            ).needsParent(Fail)
+            ).withParentPath(ParentMissingAction.IS_A_FAILURE)
         }.isFailure().isInstanceOf(IOException::class).peek { println(it.message) }
+    }
+
+    @Test
+    fun touchNonExistingFile(@TempDir tempDir: Path) {
+        val testStart = System.currentTimeMillis()
+        val file = path(tempDir, "/path/to/my/dotty.txt").file()
+        file.touch()
+        assertThat(file).exists()
+        assertThat(file).transform { it.lastModified() }.isGreaterThan(testStart)
     }
 
 }
